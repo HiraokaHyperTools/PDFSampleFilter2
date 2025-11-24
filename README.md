@@ -2,12 +2,14 @@
 
 ## 概要
 
-PDF ファイル向けに [IFilter (filter.h) - Win32 apps | Microsoft Learn](https://learn.microsoft.com/en-us/windows/
-win32/api/filter/nn-filter-ifilter) を実装します。
+PDF ファイル向けに [IFilter (filter.h) - Win32 apps | Microsoft Learn](https://learn.microsoft.com/en-us/windows/win32/api/filter/nn-filter-ifilter) を実装します。
 
 `Adobe PDF IFilter 6.0` や `Adobe PDF iFilter 9 for 64-bit platforms` や `Adobe PDF iFilter 11 for 64-bit platforms` がもはや提供されなくなったため、その代替品として開発しました。
 
-Windows 10 またはそれ以降で動作します。 32 ビット版 (x86) と 64 ビット版 (x64) と、両方の DLL を含んでいます。
+Windows 10 またはそれ以降で動作します。 つぎの DLL を含んでいます。
+
+- 32 ビット版 (x86)
+- 64 ビット版 (x64, Arm64X)
 
 PDFium ([bblanchon/pdfium-binaries: 📰 Binary distribution of PDFium](https://github.com/bblanchon/pdfium-binaries)) を使用しています。
 
@@ -56,6 +58,7 @@ Visual Studio 2022 を使ってビルドします。
 以下のフォルダーについて、つぎのサイトからバイナリを入手してアーカイブを展開してください [bblanchon/pdfium-binaries: 📰 Binary distribution of PDFium](https://github.com/bblanchon/pdfium-binaries):
 
 ```
+pdfium-win-arm64
 pdfium-win-x64
 pdfium-win-x86
 ```
