@@ -12,6 +12,7 @@ Unicode true
 !define APP "PDFSampleFilter2"
 !define BINDIR32 "Release"
 !define BINDIR64 "x64\Release"
+!define BINDIRARM64 "ARM64EC\Release"
 
 !define COM "HIRAOKA HYPERS TOOLS, Inc."
 
@@ -19,7 +20,7 @@ Unicode true
 !include "Appver.tmp"
 !searchreplace APV "${VER}" "." "_"
 
-!system 'MySign "${BINDIR32}\${APP}.dll" "${BINDIR64}\${APP}.dll"'
+!system 'MySign "${BINDIR32}\${APP}.dll" "${BINDIR64}\${APP}.dll" "${BINDIRARM64}\${APP}.dll"'
 !finalize 'MySign "%1"'
 
 ; The name of the installer
@@ -117,9 +118,32 @@ Section "${APP} (x64)" x64
 
 SectionEnd
 
+Section "${APP} (Arm64X)" arm64
+  ; Set output path to the installation directory.
+  SetOutPath $INSTDIR\x64 ; install to `x64` not `arm64`
+
+  ; Put file there
+  File "${BINDIRARM64}\PDFSampleFilter2.dll"
+  File /oname=pdfium.dll       "..\pdfium-win-arm64x\bin\pdfium.dll"
+  File /oname=pdfium_x64.dll   "..\pdfium-win-x64\bin\pdfium.dll"
+  File /oname=pdfium_arm64.dll "..\pdfium-win-arm64\bin\pdfium.dll"
+  
+  ExecWait 'regsvr32.exe /s "$OUTDIR\${APP}.dll"' $0
+  DetailPrint "ExitCode: $0"
+  
+  ${If} $0 != 0
+    Abort "regsvr32.exe (for arm64) failed with ExitCode: $0"
+  ${EndIf}
+
+SectionEnd
+
 Function .onInit
-  ${IfNot} ${RunningX64}
+  ${If} ${IsNativeARM64}
     SectionSetFlags ${x64} 0
+    SectionSetFlags ${arm64} 1
+  ${ElseIf} ${RunningX64}
+    SectionSetFlags ${x64} 1
+    SectionSetFlags ${arm64} 0
   ${EndIf}
 FunctionEnd
 
@@ -146,6 +170,8 @@ Section "Uninstall"
   Delete "$INSTDIR\x86\PDFSampleFilter2.dll"
   RMDir  "$INSTDIR\x86"
   Delete "$INSTDIR\x64\pdfium.dll"
+  Delete "$INSTDIR\x64\pdfium_arm64.dll"
+  Delete "$INSTDIR\x64\pdfium_x64.dll"
   Delete "$INSTDIR\x64\PDFSampleFilter2.dll"
   RMDir  "$INSTDIR\x64"
   Delete "$INSTDIR\uninstall.exe"
